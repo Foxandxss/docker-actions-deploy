@@ -22,7 +22,7 @@ jobs:
     - name: Publish to Github Packages Registry
       uses: elgohr/Publish-Docker-Github-Action@master
       with:
-        name: Foxandxss/docker-actions-deploy/docker-imagegit a
+        name: foxandxss/docker-actions-deploy/docker-imagegit
         registry: docker.pkg.github.com
         username: Foxandxss
         password: ${{ secrets.GITHUB_TOKEN }}
