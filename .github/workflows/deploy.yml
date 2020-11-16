@@ -1,46 +1,18 @@
-name: build
+name: Deploy
 
 on:
   push:
     branches:
-      - master
+      - heroku
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-    - name: Use Node.js 13.10
-      uses: actions/setup-node@v1
-      with:
-        node-version: '13.10'
-    - name: Install
-      run: |
-        npm install
-      env:
-        CI: true
-    - name: Publish to Github Packages Registry
-      uses: elgohr/Publish-Docker-Github-Action@master
-      with:
-        name: foxandxss/docker-actions-deploy/docker-imagegit
-        registry: docker.pkg.github.com
-        username: Foxandxss
-        password: ${{ secrets.GITHUB_TOKEN }}
-        dockerfile: Dockerfile.prod
-        tags: latest
-    - name: Deploy package to digitalocean
-      uses: appleboy/ssh-action@master
-      env:
-          GITHUB_USERNAME: Foxandxss
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        password: ${{ secrets.PASSWORD }}
-        port: ${{ secrets.PORT }}
-        envs: GITHUB_USERNAME, GITHUB_TOKEN
-        script: |
-          docker stop $(docker ps -a -q)
-          docker login docker.pkg.github.com -u $GITHUB_USERNAME -p $GITHUB_TOKEN
-          docker pull docker.pkg.github.com/foxandxss/docker-actions-deploy/docker-imagegit:latest
-          docker run -dit -p 80:80 docker.pkg.github.com/foxandxss/docker-actions-deploy/docker-imagegit:latest
+      - uses: actions/checkout@v2
+      - uses: akhileshns/heroku-deploy@v3.6.8 # This is the action
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: ${{secrets.HEROKU_APP_NAME}}
+          heroku_email: ${{secrets.HEROKU_API_EMAIL}}
+          useDocker: true
